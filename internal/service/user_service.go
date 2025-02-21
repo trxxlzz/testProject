@@ -2,18 +2,21 @@ package service
 
 import (
 	"context"
-	"testProject/internal/repository"
 )
 
-type UserService struct {
-	Repo *repository.UserRepo
+type UserRepository interface {
+	CreateUser(ctx context.Context, name string, password string) (int64, string, error)
 }
 
-func (s *UserService) CreateUser(ctx context.Context, name string, password string) (id int64, err error) {
-	id, err = s.Repo.CreateUser(ctx, name, password)
+type UserService struct {
+	Repo UserRepository
+}
+
+func (s *UserService) CreateUser(ctx context.Context, name string, password string) (id int64, message string, err error) {
+	id, message, err = s.Repo.CreateUser(ctx, name, password)
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
-	return id, err
+	return id, "User succesfully created!", err
 }
